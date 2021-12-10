@@ -121,6 +121,8 @@ include_directories(
  ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKROSlibzmq/include
  ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKROSprotobuf/src
  ${CMAKE_SOURCE_DIR}/../../../third_party_libs/ROSProtoDef2022/out
+ ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKimgui
+ ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKimplot
 )
 
 message("CATKIN INCLUDES:${catkin_INCLUDE_DIRS}")
@@ -213,6 +215,15 @@ file(GLOB_RECURSE test_sources CONFIGURE_DEPENDS
 add_executable(${PROJECT_NAME} ${executable_sources})
 target_include_directories(${PROJECT_NAME} PUBLIC "include")
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} Threads::Threads)
+if(ROBOT_ARCHITECTURE_NATIVE)
+  target_link_libraries(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKimgui/libimgui.a)
+  target_link_libraries(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKimplot/libimplot.a)
+endif(ROBOT_ARCHITECTURE_NATIVE)
+
+if(ROBOT_ARCHITECTURE_AARCH64)
+  #TODO
+  #target_link_libraries(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKROSlibzmq/build/aarch64/lib/libzmq.a)
+endif(ROBOT_ARCHITECTURE_AARCH64)
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 #############
@@ -222,6 +233,17 @@ add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EX
 add_library(t${PROJECT_NAME} ${executable_sources})
 target_include_directories(t${PROJECT_NAME} PUBLIC "include")
 target_link_libraries(t${PROJECT_NAME} ${catkin_LIBRARIES} Threads::Threads)
+
+if(ROBOT_ARCHITECTURE_NATIVE)
+  target_link_libraries(t${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKimgui/libimgui.a)
+  target_link_libraries(t${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKimplot/libimplot.a)
+endif(ROBOT_ARCHITECTURE_NATIVE)
+
+if(ROBOT_ARCHITECTURE_AARCH64)
+  #TODO
+  #target_link_libraries(t${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKROSlibzmq/build/aarch64/lib/libzmq.a)
+endif(ROBOT_ARCHITECTURE_AARCH64)
+
 add_dependencies(t${PROJECT_NAME} ${PROJECT_NAME} ${t${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 catkin_add_gtest(${PROJECT_NAME}-test ${test_sources})

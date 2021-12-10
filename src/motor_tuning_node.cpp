@@ -1,5 +1,6 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
+#include <imgui.h>
 
 #include <thread>
 #include <string>
@@ -32,8 +33,17 @@ void override_send_thread()
 {
 	static rio_control_node::Cal_Override_Mode overrideModeMsg;
 	static ros::Publisher override_mode_pub = node->advertise<rio_control_node::Cal_Override_Mode>("OverrideMode", 1);
-	overrideModeMsg.operation_mode = rio_control_node::Cal_Override_Mode::TUNING_PIDS;
-	override_mode_pub.publish(overrideModeMsg);
+
+	ros::Rate rate(10);
+
+	while (ros::ok())
+	{
+		{
+			overrideModeMsg.operation_mode = rio_control_node::Cal_Override_Mode::TUNING_PIDS;
+			override_mode_pub.publish(overrideModeMsg);
+		}
+		rate.sleep();
+	}
 }
 
 void motorStatusCallback(const rio_control_node::Motor_Status &msg)
