@@ -217,8 +217,14 @@ add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EX
 #############
 ## Testing ##
 #############
+## Add gtest based cpp test target and link libraries.
+add_library(t${PROJECT_NAME} ${executable_sources})
+target_include_directories(t${PROJECT_NAME} PUBLIC "include")
+target_link_libraries(t${PROJECT_NAME} ${catkin_LIBRARIES} Threads::Threads)
+add_dependencies(t${PROJECT_NAME} ${t${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
 catkin_add_gtest(${PROJECT_NAME}-test ${test_sources})
 if(TARGET ${PROJECT_NAME}-test)
-  target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
+  target_link_libraries(${PROJECT_NAME}-test t${PROJECT_NAME})
   target_include_directories(${PROJECT_NAME}-test PUBLIC "include" "test/include")
 endif()
