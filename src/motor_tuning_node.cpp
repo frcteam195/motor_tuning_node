@@ -5,7 +5,42 @@
 #include <string>
 #include <mutex>
 
+#include "rio_control_node/Motor_Configuration.h"
+#include "rio_control_node/Motor_Control.h"
+#include "rio_control_node/Motor_Status.h"
+#include "rio_control_node/Cal_Override_Mode.h"
+
 ros::NodeHandle* node;
+
+void motor_tuning_control_transmit()
+{
+	static rio_control_node::Motor_Control motorControl;
+	static ros::Publisher motor_control_pub = node->advertise<rio_control_node::Motor_Control>("MotorTuningControl", 1);
+
+	
+}
+
+void motor_tuning_config_transmit()
+{
+	static rio_control_node::Motor_Configuration motorConfiguration;
+	static ros::Publisher motor_config_pub = node->advertise<rio_control_node::Motor_Configuration>("MotorTuningConfiguration", 1);
+
+	
+}
+
+void override_send_thread()
+{
+	static rio_control_node::Cal_Override_Mode overrideModeMsg;
+	static ros::Publisher override_mode_pub = node->advertise<rio_control_node::Cal_Override_Mode>("OverrideMode", 1);
+	overrideModeMsg.operation_mode = rio_control_node::Cal_Override_Mode::TUNING_PIDS;
+	override_mode_pub.publish(overrideModeMsg);
+}
+
+void motorStatusCallback(const rio_control_node::Motor_Status &msg)
+{
+	
+}
+
 
 int main(int argc, char **argv)
 {
@@ -24,6 +59,10 @@ int main(int argc, char **argv)
 	ros::NodeHandle n;
 
 	node = &n;
+
+	std::thread overrideModeSendThread(override_send_thread);
+
+	ros::Subscriber motorControl = node->subscribe("MotorStatus", 100, motorStatusCallback);
 
 	ros::spin();
 	return 0;

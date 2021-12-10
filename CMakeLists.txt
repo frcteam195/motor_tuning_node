@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.0.2)
 set(PROJECT_NAME "motor_tuning_node")
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(${PROJECT_NAME})
 
 ## Compile as C++11, supported in ROS Kinetic and newer
@@ -209,7 +211,6 @@ file(GLOB_RECURSE test_sources CONFIGURE_DEPENDS
 )
 
 add_executable(${PROJECT_NAME} ${executable_sources})
-set_property(TARGET ${PROJECT_NAME} PROPERTY ENABLE_EXPORTS 1)
 target_include_directories(${PROJECT_NAME} PUBLIC "include")
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} Threads::Threads)
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
@@ -221,10 +222,11 @@ add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EX
 add_library(t${PROJECT_NAME} ${executable_sources})
 target_include_directories(t${PROJECT_NAME} PUBLIC "include")
 target_link_libraries(t${PROJECT_NAME} ${catkin_LIBRARIES} Threads::Threads)
-add_dependencies(t${PROJECT_NAME} ${t${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(t${PROJECT_NAME} ${PROJECT_NAME} ${t${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 catkin_add_gtest(${PROJECT_NAME}-test ${test_sources})
 if(TARGET ${PROJECT_NAME}-test)
   target_link_libraries(${PROJECT_NAME}-test t${PROJECT_NAME})
   target_include_directories(${PROJECT_NAME}-test PUBLIC "include" "test/include")
+  add_dependencies(${PROJECT_NAME}-test t${PROJECT_NAME} ${t${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 endif()
