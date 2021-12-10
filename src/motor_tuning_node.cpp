@@ -5,6 +5,7 @@
 #include <thread>
 #include <string>
 #include <mutex>
+#include <map>
 
 #include "rio_control_node/Motor_Configuration.h"
 #include "rio_control_node/Motor_Control.h"
@@ -12,6 +13,12 @@
 #include "rio_control_node/Cal_Override_Mode.h"
 
 ros::NodeHandle* node;
+
+std::map<uint32_t, rio_control_node::Motor_Config> currMotorConfigMap;
+std::mutex curr_motor_config_lock;
+
+std::map<uint32_t, rio_control_node::Motor_Info> currMotorStatusMap;
+std::mutex curr_motor_status_lock;
 
 void motor_tuning_control_transmit()
 {
@@ -48,7 +55,20 @@ void override_send_thread()
 
 void motorStatusCallback(const rio_control_node::Motor_Status &msg)
 {
-	
+	std::scoped_lock<std::mutex> lock(curr_motor_status_lock);
+	for (const rio_control_node::Motor_Info &currMotor : msg.motors)
+	{
+		currMotorStatusMap[currMotor.id] = currMotor;
+	}
+}
+
+void motorCurrentConfigurationCallback(const rio_control_node::Motor_Configuration &msg)
+{
+	std::scoped_lock<std::mutex> lock(curr_motor_config_lock);
+	for (const rio_control_node::Motor_Config &currMotor : msg.motors)
+	{
+		currMotorConfigMap[currMotor.id] = currMotor;
+	}
 }
 
 
@@ -72,7 +92,8 @@ int main(int argc, char **argv)
 
 	std::thread overrideModeSendThread(override_send_thread);
 
-	ros::Subscriber motorControl = node->subscribe("MotorStatus", 100, motorStatusCallback);
+	ros::Subscriber motorStatusSubscriber = node->subscribe("MotorStatus", 100, motorStatusCallback);
+	ros::Subscriber motorConfigSubscriber = node->subscribe("MotorConfiguration", 100, motorCurrentConfigurationCallback);
 
 	ros::spin();
 	return 0;
