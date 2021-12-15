@@ -2,6 +2,7 @@
 #include <iostream>
 #include <ros/ros.h>
 #include <thread>
+#include <string>
 
 #include "imgui.h"
 #include "imgui_impl_sdl.h"
@@ -10,6 +11,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
 
+
 WindowManager::~WindowManager()
 {
     if (mWindowThread)
@@ -17,17 +19,32 @@ WindowManager::~WindowManager()
         delete mWindowThread;
     }
 }
-void WindowManager::showWindow()
+void WindowManager::showWindow(std::map<uint32_t, rio_control_node::Motor_Config>& currMotorConfigMap, std::mutex& motorConfigMutex, std::map<uint32_t, rio_control_node::Motor_Info>& currMotorStatusMap, std::mutex& motorInfoMutex)
 {
     if (!mWindowThread)
     {
         mWindowThread = new std::thread(&WindowManager::showWindow_internal, this);
+        mMotorConfigMap = &currMotorConfigMap;
+        mOutputMotorConfigMutex = &motorConfigMutex;
+        mMotorStatusMap = &currMotorStatusMap;
+        mMotorInfoMutex = &motorInfoMutex;
     }
 }
 
 std::thread* WindowManager::getThreadHandle()
 {
     return mWindowThread;
+}
+
+bool WindowManager::isUpdateRequested()
+{
+    return mUpdateRequested;
+}
+
+void WindowManager::resetUpdateRequested()
+{
+    std::scoped_lock<std::mutex> lock(mUpdateMutex);
+    mUpdateRequested = false;
 }
 
 void WindowManager::showWindow_internal()
@@ -120,11 +137,33 @@ void WindowManager::showWindow_internal()
 
         ImGui::Begin("PID Tuner");   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
         
+        if (mMotorConfigMap->size() > 0)
+        {
+            static const char* current_motor = NULL;
+            if(ImGui::BeginCombo("Motor", current_motor))
+            {
+                for (auto it = mMotorConfigMap->begin(); it != mMotorConfigMap->end(); it++)
+                {
+                    bool is_selected = (std::string(current_motor) == std::to_string(it->first)); // You can store your selection however you want, outside or inside your objects
+                    if (ImGui::Selectable(std::to_string(it->first).c_str(), is_selected))
+                    {
+                        current_motor = std::to_string(it->first).c_str();
+                    }
+                    if (is_selected)
+                    {
+                        ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
+                    }
+                }
+                ImGui::EndCombo();
+            }
+        }
+
         double kP;
         ImGui::InputDouble("kP", &kP, 0.001, 0.1);
         if (ImGui::Button("Send Update"))
         {
-            
+            std::scoped_lock<std::mutex> lock(mUpdateMutex);
+            mUpdateRequested = true;
         }
         ImGui::End();
 

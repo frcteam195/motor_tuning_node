@@ -96,7 +96,7 @@ int main(int argc, char **argv)
 	ros::Subscriber motorStatusSubscriber = node->subscribe("MotorStatus", 100, motorStatusCallback);
 	ros::Subscriber motorConfigSubscriber = node->subscribe("MotorConfiguration", 100, motorCurrentConfigurationCallback);
 
-	WindowManager::getInstance().showWindow();
+	WindowManager::getInstance().showWindow(currMotorConfigMap, curr_motor_config_lock, currMotorStatusMap, curr_motor_status_lock);
 
 	ros::spin();
 
