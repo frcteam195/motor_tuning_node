@@ -99,5 +99,12 @@ int main(int argc, char **argv)
 	WindowManager::getInstance().showWindow();
 
 	ros::spin();
+
+	if (WindowManager::getInstance().getThreadHandle())
+	{
+		WindowManager::getInstance().getThreadHandle()->join();
+	}
+	overrideModeSendThread.join();
+
 	return 0;
 }

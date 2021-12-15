@@ -9,6 +9,7 @@ class WindowManager : public Singleton<WindowManager>
 public:
     ~WindowManager();
     void showWindow();
+    std::thread* getThreadHandle();
 private:
     void showWindow_internal();
 
