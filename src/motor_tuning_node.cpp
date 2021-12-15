@@ -1,6 +1,5 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
-#include <imgui.h>
 
 #include <thread>
 #include <string>
@@ -11,6 +10,8 @@
 #include "rio_control_node/Motor_Control.h"
 #include "rio_control_node/Motor_Status.h"
 #include "rio_control_node/Cal_Override_Mode.h"
+
+#include "WindowManager.hpp"
 
 ros::NodeHandle* node;
 
@@ -94,6 +95,8 @@ int main(int argc, char **argv)
 
 	ros::Subscriber motorStatusSubscriber = node->subscribe("MotorStatus", 100, motorStatusCallback);
 	ros::Subscriber motorConfigSubscriber = node->subscribe("MotorConfiguration", 100, motorCurrentConfigurationCallback);
+
+	WindowManager::getInstance().showWindow();
 
 	ros::spin();
 	return 0;

@@ -11,7 +11,6 @@ project(${PROJECT_NAME})
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS roscpp std_msgs message_generation ck_utilities_node tf2 rio_control_node)
-
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -113,15 +112,21 @@ catkin_package(
 ## Build ##
 ###########
 
+find_package(SDL2 REQUIRED)
+find_package(glfw3 REQUIRED)
+find_package(OpenGL REQUIRED)
+
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
 # include
  ${catkin_INCLUDE_DIRS}
+ ${SDL2_INCLUDE_DIRS}
  ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKROSlibzmq/include
  ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKROSprotobuf/src
  ${CMAKE_SOURCE_DIR}/../../../third_party_libs/ROSProtoDef2022/out
  ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKimgui
+ ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKimgui/backends
  ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKimplot
 )
 
@@ -214,7 +219,7 @@ file(GLOB_RECURSE test_sources CONFIGURE_DEPENDS
 
 add_executable(${PROJECT_NAME} ${executable_sources})
 target_include_directories(${PROJECT_NAME} PUBLIC "include")
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} Threads::Threads)
+target_link_libraries(${PROJECT_NAME}  ${catkin_LIBRARIES} Threads::Threads ${SDL2_LIBRARIES} OpenGL::GL glfw GL dl)
 if(ROBOT_ARCHITECTURE_NATIVE)
   target_link_libraries(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKimgui/libimgui.a)
   target_link_libraries(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKimplot/libimplot.a)
@@ -230,25 +235,24 @@ add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EX
 ## Testing ##
 #############
 ## Add gtest based cpp test target and link libraries.
-add_library(t${PROJECT_NAME} ${executable_sources})
-target_include_directories(t${PROJECT_NAME} PUBLIC "include")
-target_link_libraries(t${PROJECT_NAME} ${catkin_LIBRARIES} Threads::Threads)
+# add_library(t${PROJECT_NAME} ${executable_sources})
+# target_include_directories(t${PROJECT_NAME} PUBLIC "include")
+# target_link_libraries(t${PROJECT_NAME} ${catkin_LIBRARIES} Threads::Threads SDL2::SDL2)
+# if(ROBOT_ARCHITECTURE_NATIVE)
+#   target_link_libraries(t${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKimgui/libimgui.a)
+#   target_link_libraries(t${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKimplot/libimplot.a)
+# endif(ROBOT_ARCHITECTURE_NATIVE)
 
-if(ROBOT_ARCHITECTURE_NATIVE)
-  target_link_libraries(t${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKimgui/libimgui.a)
-  target_link_libraries(t${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKimplot/libimplot.a)
-endif(ROBOT_ARCHITECTURE_NATIVE)
+# if(ROBOT_ARCHITECTURE_AARCH64)
+#   #TODO
+#   #target_link_libraries(t${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKROSlibzmq/build/aarch64/lib/libzmq.a)
+# endif(ROBOT_ARCHITECTURE_AARCH64)
 
-if(ROBOT_ARCHITECTURE_AARCH64)
-  #TODO
-  #target_link_libraries(t${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKROSlibzmq/build/aarch64/lib/libzmq.a)
-endif(ROBOT_ARCHITECTURE_AARCH64)
+# add_dependencies(t${PROJECT_NAME} ${PROJECT_NAME} ${t${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-add_dependencies(t${PROJECT_NAME} ${PROJECT_NAME} ${t${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-catkin_add_gtest(${PROJECT_NAME}-test ${test_sources})
-if(TARGET ${PROJECT_NAME}-test)
-  target_link_libraries(${PROJECT_NAME}-test t${PROJECT_NAME})
-  target_include_directories(${PROJECT_NAME}-test PUBLIC "include" "test/include")
-  add_dependencies(${PROJECT_NAME}-test t${PROJECT_NAME} ${t${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-endif()
+# catkin_add_gtest(${PROJECT_NAME}-test ${test_sources})
+# if(TARGET ${PROJECT_NAME}-test)
+#   target_link_libraries(${PROJECT_NAME}-test t${PROJECT_NAME})
+#   target_include_directories(${PROJECT_NAME}-test PUBLIC "include" "test/include")
+#   add_dependencies(${PROJECT_NAME}-test t${PROJECT_NAME} ${t${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# endif()
