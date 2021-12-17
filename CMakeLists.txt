@@ -115,6 +115,9 @@ catkin_package(
 find_package(SDL2 REQUIRED)
 # find_package(glfw3 REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(imgui REQUIRED)
+find_package(implot REQUIRED)
+
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
@@ -122,12 +125,9 @@ include_directories(
 # include
  ${catkin_INCLUDE_DIRS}
  ${SDL2_INCLUDE_DIRS}
- ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKROSlibzmq/include
- ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKROSprotobuf/src
  ${CMAKE_SOURCE_DIR}/../../../third_party_libs/ROSProtoDef2022/out
- ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKimgui
- ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKimgui/backends
- ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKimplot
+ ${IMGUI_INCLUDE_DIRS}
+ ${IMPLOT_INCLUDE_DIRS}
 )
 
 message("CATKIN INCLUDES:${catkin_INCLUDE_DIRS}")
@@ -219,16 +219,8 @@ file(GLOB_RECURSE test_sources CONFIGURE_DEPENDS
 
 add_executable(${PROJECT_NAME} ${executable_sources})
 target_include_directories(${PROJECT_NAME} PUBLIC "include")
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} Threads::Threads ${SDL2_LIBRARIES} OpenGL::GL GL dl)
-if(ROBOT_ARCHITECTURE_NATIVE)
-  target_link_libraries(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKimgui/libimgui.a)
-  target_link_libraries(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKimplot/libimplot.a)
-endif(ROBOT_ARCHITECTURE_NATIVE)
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} Threads::Threads ${SDL2_LIBRARIES} ${IMGUI_LIBRARIES} ${IMPLOT_LIBRARIES} OpenGL::GL GL dl)
 
-if(ROBOT_ARCHITECTURE_AARCH64)
-  #TODO
-  #target_link_libraries(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKROSlibzmq/build/aarch64/lib/libzmq.a)
-endif(ROBOT_ARCHITECTURE_AARCH64)
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 #############
@@ -237,16 +229,7 @@ add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EX
 ## Add gtest based cpp test target and link libraries.
 add_library(t${PROJECT_NAME} ${executable_sources})
 target_include_directories(t${PROJECT_NAME} PUBLIC "include")
-target_link_libraries(t${PROJECT_NAME} ${catkin_LIBRARIES} Threads::Threads ${SDL2_LIBRARIES} OpenGL::GL GL dl)
-if(ROBOT_ARCHITECTURE_NATIVE)
-  target_link_libraries(t${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKimgui/libimgui.a)
-  target_link_libraries(t${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKimplot/libimplot.a)
-endif(ROBOT_ARCHITECTURE_NATIVE)
-
-if(ROBOT_ARCHITECTURE_AARCH64)
-  #TODO
-  #target_link_libraries(t${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/../../../third_party_libs/CKROSlibzmq/build/aarch64/lib/libzmq.a)
-endif(ROBOT_ARCHITECTURE_AARCH64)
+target_link_libraries(t${PROJECT_NAME} ${catkin_LIBRARIES} Threads::Threads ${SDL2_LIBRARIES} ${IMGUI_LIBRARIES} ${IMPLOT_LIBRARIES} OpenGL::GL GL dl)
 
 add_dependencies(t${PROJECT_NAME} ${PROJECT_NAME} ${t${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
