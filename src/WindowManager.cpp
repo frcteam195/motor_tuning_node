@@ -175,29 +175,38 @@ void WindowManager::drawImguiWindow(int motorId, int listPos)
     widgetTitle += std::to_string(motorId);
     ImGui::Begin(widgetTitle.c_str());   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
     
-    if (mMotorConfigMap->size() > 0)
-    {
-        static const char* current_motor = NULL;
-        if(ImGui::BeginCombo("Motor", current_motor))
-        {
-            for (auto it = mMotorConfigMap->begin(); it != mMotorConfigMap->end(); it++)
-            {
-                bool is_selected = (std::string(current_motor) == std::to_string(it->first)); // You can store your selection however you want, outside or inside your objects
-                if (ImGui::Selectable(std::to_string(it->first).c_str(), is_selected))
-                {
-                    current_motor = std::to_string(it->first).c_str();
-                }
-                if (is_selected)
-                {
-                    ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
-                }
-            }
-            ImGui::EndCombo();
-        }
-    }
+    // if (mMotorConfigMap->size() > 0)
+    // {
+    //     static const char* current_motor = NULL;
+    //     if(ImGui::BeginCombo("Motor", current_motor))
+    //     {
+    //         for (auto it = mMotorConfigMap->begin(); it != mMotorConfigMap->end(); it++)
+    //         {
+    //             bool is_selected = (std::string(current_motor) == std::to_string(it->first)); // You can store your selection however you want, outside or inside your objects
+    //             if (ImGui::Selectable(std::to_string(it->first).c_str(), is_selected))
+    //             {
+    //                 current_motor = std::to_string(it->first).c_str();
+    //             }
+    //             if (is_selected)
+    //             {
+    //                 ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
+    //             }
+    //         }
+    //         ImGui::EndCombo();
+    //     }
+    // }
 
-    double kP;
-    ImGui::InputDouble("kP", &kP, 0.001, 0.1);
+    ImGui::InputDouble("kP", &mTrackedMotorConfig[motorId].kP, 0.001, 0.1);
+    ImGui::InputDouble("kI", &mTrackedMotorConfig[motorId].kI, 0.001, 0.1);
+    ImGui::InputDouble("kD", &mTrackedMotorConfig[motorId].kD, 0.001, 0.1);
+    ImGui::InputDouble("kF", &mTrackedMotorConfig[motorId].kF, 0.001, 0.1);
+    ImGui::InputDouble("I Zone", &mTrackedMotorConfig[motorId].iZone, 0.001, 0.1);
+    ImGui::InputDouble("Max I Accumulator", &mTrackedMotorConfig[motorId].max_i_accum, 0.001, 0.1);
+    ImGui::InputDouble("Motion Cruise Velocity", &mTrackedMotorConfig[motorId].motion_cruise_velocity, 0.001, 0.1);
+    ImGui::InputDouble("Motion Acceleration", &mTrackedMotorConfig[motorId].motion_acceleration, 0.001, 0.1);
+    ImGui::InputInt("Motion S Curve Strength", &mTrackedMotorConfig[motorId].motion_s_curve_strength, 1, 1);
+    ImGui::InputDouble("Allowed Closed Loop Error", &mTrackedMotorConfig[motorId].allowed_closed_loop_error, 0.001, 0.1);
+    ImGui::InputDouble("Max Closed Loop Peak Output", &mTrackedMotorConfig[motorId].max_closed_loop_peak_output, 0.001, 0.1);
     if (ImGui::Button("Send Update"))
     {
         std::scoped_lock<std::mutex> lock(mUpdateMutex);
