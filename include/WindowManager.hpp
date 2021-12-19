@@ -17,8 +17,11 @@ public:
     std::thread* getThreadHandle();
     bool isUpdateRequested();
     void resetUpdateRequested();
+    void drawImguiWindow(int motorId, int listPos);
 private:
-    void showWindow_internal();
+    void showWindowOpenGL2_internal();
+    void showWindowOpenGL3_internal();
+    void captureTunableMotors();
 
     bool mUpdateRequested;
     std::mutex mUpdateMutex;
@@ -28,5 +31,7 @@ private:
     std::map<uint32_t, rio_control_node::Motor_Info>* mMotorStatusMap;
     std::mutex* mOutputMotorConfigMutex;
     std::mutex* mMotorInfoMutex;
+
+    std::map<uint32_t, rio_control_node::Motor_Config> mTrackedMotors;
 
 };
