@@ -23,7 +23,7 @@ WindowManager::~WindowManager()
         delete mWindowThread;
     }
 }
-void WindowManager::showWindow(std::map<uint32_t, rio_control_node::Motor_Config>& currMotorConfigMap, std::mutex& motorConfigMutex, std::map<uint32_t, rio_control_node::Motor_Info>& currMotorStatusMap, std::mutex& motorInfoMutex)
+void WindowManager::showWindow(std::map<uint32_t, rio_control_node::Motor_Config>& currMotorConfigMap, std::mutex& motorConfigMutex, std::map<uint32_t, rio_control_node::Motor_Info>& currMotorStatusMap, std::mutex& motorInfoMutex, std::map<uint32_t, rio_control_node::Motor>& currMotorControlMap, std::mutex& motorControlMutex)
 {
     if (!mWindowThread)
     {
@@ -32,6 +32,8 @@ void WindowManager::showWindow(std::map<uint32_t, rio_control_node::Motor_Config
         mOutputMotorConfigMutex = &motorConfigMutex;
         mMotorStatusMap = &currMotorStatusMap;
         mMotorInfoMutex = &motorInfoMutex;
+        mMotorControlMap = &currMotorControlMap;
+        mMotorControlMutex = &motorControlMutex;
     }
 }
 
@@ -134,9 +136,9 @@ void WindowManager::showWindowOpenGL3_internal()
 
         captureTunableMotors();
 
-        for (const std::pair<uint32_t, rio_control_node::Motor_Config>& m : mTrackedMotors)
+        for (const std::pair<uint32_t, rio_control_node::Motor_Config>& m : mTrackedMotorConfig)
         {
-            drawImguiWindow(m.first, std::distance(mTrackedMotors.begin(),mTrackedMotors.find(m.first)));
+            drawImguiWindow(m.first, std::distance(mTrackedMotorConfig.begin(),mTrackedMotorConfig.find(m.first)));
         }
 
         // Rendering
@@ -166,7 +168,7 @@ void WindowManager::drawImguiWindow(int motorId, int listPos)
 {
     int windowWidth = 200;
     int windowHeight = 400;
-    ImGui::SetNextWindowPos(ImVec2((0 + (listPos-1) * windowWidth),0 ));
+    ImGui::SetNextWindowPos(ImVec2(listPos * windowWidth,0 ));
     ImGui::SetNextWindowSize(ImVec2(windowWidth, windowHeight), ImGuiCond_Always);
 
     std::string widgetTitle = "PID Tuner ";
@@ -211,7 +213,8 @@ void WindowManager::captureTunableMotors()
         if (m.second.controller_mode == rio_control_node::Motor_Config::MASTER
             || m.second.controller_mode == rio_control_node::Motor_Config::FAST_MASTER)
         {
-            mTrackedMotors[m.first] = m.second;
+            mTrackedMotorConfig[m.first] = m.second;
+            mTrackedMotorControl[m.first] = (*mMotorControlMap)[m.first];
         }
     }
 }
