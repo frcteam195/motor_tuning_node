@@ -53,6 +53,9 @@ void WindowManager::resetUpdateRequested()
     mUpdateRequested = false;
 }
 
+static constexpr int WINDOW_WIDTH = 1280;
+static constexpr int WINDOW_HEIGHT = 720;
+
 void WindowManager::showWindowOpenGL3_internal()
 {
     std::cout.setstate(std::ios::failbit);  //Block console output for unwanted init info
@@ -94,7 +97,7 @@ void WindowManager::showWindowOpenGL3_internal()
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
     SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-    SDL_Window* window = SDL_CreateWindow("PID Tuner | CyberKnights Team 195", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
+    SDL_Window* window = SDL_CreateWindow("PID Tuner | CyberKnights Team 195", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, window_flags);
     SDL_GLContext gl_context = SDL_GL_CreateContext(window);
     SDL_GL_MakeCurrent(window, gl_context);
     SDL_GL_SetSwapInterval(1); // Enable vsync
@@ -213,7 +216,15 @@ void WindowManager::drawImguiWindow(int motorId, int listPos)
 {
     int windowWidth = 250;
     int windowHeight = 400;
-    ImGui::SetNextWindowPos(ImVec2(listPos * windowWidth,0 ));
+    const int maxNumWidgetsWide = (WINDOW_WIDTH / windowWidth);
+    if (listPos > maxNumWidgetsWide)
+    {
+        ImGui::SetNextWindowPos(ImVec2((listPos - maxNumWidgetsWide) * windowWidth, windowHeight));
+    }
+    else
+    {
+        ImGui::SetNextWindowPos(ImVec2(listPos * windowWidth, 0));
+    }
     ImGui::SetNextWindowSize(ImVec2(windowWidth, windowHeight), ImGuiCond_Always);
 
     std::string widgetTitle = "PID Tuner ";
