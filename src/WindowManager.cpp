@@ -55,6 +55,7 @@ void WindowManager::resetUpdateRequested()
 
 void WindowManager::showWindowOpenGL3_internal()
 {
+    std::cout.setstate(std::ios::failbit);  //Block console output for unwanted init info
     // Setup SDL
     // (Some versions of SDL before <2.0.10 appears to have performance/stalling issues on a minority of Windows systems,
     // depending on whether SDL_INIT_GAMECONTROLLER is enabled or disabled.. updating to latest version of SDL is recommended!)
@@ -98,6 +99,48 @@ void WindowManager::showWindowOpenGL3_internal()
     SDL_GL_MakeCurrent(window, gl_context);
     SDL_GL_SetSwapInterval(1); // Enable vsync
 
+    //Set Window Icon
+    SDL_Surface *surface;     // Declare an SDL_Surface to be filled in with pixel data from an image file
+    Uint16 pixels[16*16] = {  // ...or with raw pixel data:
+        0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
+        0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
+        0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
+        0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
+        0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
+        0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
+        0x0fff, 0x0aab, 0x0789, 0x0bcc, 0x0eee, 0x09aa, 0x099a, 0x0ddd,
+        0x0fff, 0x0eee, 0x0899, 0x0fff, 0x0fff, 0x1fff, 0x0dde, 0x0dee,
+        0x0fff, 0xabbc, 0xf779, 0x8cdd, 0x3fff, 0x9bbc, 0xaaab, 0x6fff,
+        0x0fff, 0x3fff, 0xbaab, 0x0fff, 0x0fff, 0x6689, 0x6fff, 0x0dee,
+        0xe678, 0xf134, 0x8abb, 0xf235, 0xf678, 0xf013, 0xf568, 0xf001,
+        0xd889, 0x7abc, 0xf001, 0x0fff, 0x0fff, 0x0bcc, 0x9124, 0x5fff,
+        0xf124, 0xf356, 0x3eee, 0x0fff, 0x7bbc, 0xf124, 0x0789, 0x2fff,
+        0xf002, 0xd789, 0xf024, 0x0fff, 0x0fff, 0x0002, 0x0134, 0xd79a,
+        0x1fff, 0xf023, 0xf000, 0xf124, 0xc99a, 0xf024, 0x0567, 0x0fff,
+        0xf002, 0xe678, 0xf013, 0x0fff, 0x0ddd, 0x0fff, 0x0fff, 0xb689,
+        0x8abb, 0x0fff, 0x0fff, 0xf001, 0xf235, 0xf013, 0x0fff, 0xd789,
+        0xf002, 0x9899, 0xf001, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0xe789,
+        0xf023, 0xf000, 0xf001, 0xe456, 0x8bcc, 0xf013, 0xf002, 0xf012,
+        0x1767, 0x5aaa, 0xf013, 0xf001, 0xf000, 0x0fff, 0x7fff, 0xf124,
+        0x0fff, 0x089a, 0x0578, 0x0fff, 0x089a, 0x0013, 0x0245, 0x0eff,
+        0x0223, 0x0dde, 0x0135, 0x0789, 0x0ddd, 0xbbbc, 0xf346, 0x0467,
+        0x0fff, 0x4eee, 0x3ddd, 0x0edd, 0x0dee, 0x0fff, 0x0fff, 0x0dee,
+        0x0def, 0x08ab, 0x0fff, 0x7fff, 0xfabc, 0xf356, 0x0457, 0x0467,
+        0x0fff, 0x0bcd, 0x4bde, 0x9bcc, 0x8dee, 0x8eff, 0x8fff, 0x9fff,
+        0xadee, 0xeccd, 0xf689, 0xc357, 0x2356, 0x0356, 0x0467, 0x0467,
+        0x0fff, 0x0ccd, 0x0bdd, 0x0cdd, 0x0aaa, 0x2234, 0x4135, 0x4346,
+        0x5356, 0x2246, 0x0346, 0x0356, 0x0467, 0x0356, 0x0467, 0x0467,
+        0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
+        0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
+        0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
+        0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff
+    };
+    surface = SDL_CreateRGBSurfaceFrom(pixels,16,16,16,16*2,0x0f00,0x00f0,0x000f,0xf000);
+    // The icon is attached to the window pointer
+    SDL_SetWindowIcon(window, surface);
+    // ...and the surface containing the icon pixel data is no longer required.
+    SDL_FreeSurface(surface);
+
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -134,6 +177,8 @@ void WindowManager::showWindowOpenGL3_internal()
         ImGui_ImplSDL2_NewFrame();
         ImGui::NewFrame();
 
+        std::cout.clear();
+
         captureTunableMotors();
 
         for (const std::pair<uint32_t, rio_control_node::Motor_Config>& m : mTrackedMotorConfig)
@@ -166,7 +211,7 @@ void WindowManager::showWindowOpenGL3_internal()
 
 void WindowManager::drawImguiWindow(int motorId, int listPos)
 {
-    int windowWidth = 200;
+    int windowWidth = 250;
     int windowHeight = 400;
     ImGui::SetNextWindowPos(ImVec2(listPos * windowWidth,0 ));
     ImGui::SetNextWindowSize(ImVec2(windowWidth, windowHeight), ImGuiCond_Always);
@@ -174,45 +219,50 @@ void WindowManager::drawImguiWindow(int motorId, int listPos)
     std::string widgetTitle = "PID Tuner ";
     widgetTitle += std::to_string(motorId);
     ImGui::Begin(widgetTitle.c_str());   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-    
-    // if (mMotorConfigMap->size() > 0)
-    // {
-    //     static const char* current_motor = NULL;
-    //     if(ImGui::BeginCombo("Motor", current_motor))
-    //     {
-    //         for (auto it = mMotorConfigMap->begin(); it != mMotorConfigMap->end(); it++)
-    //         {
-    //             bool is_selected = (std::string(current_motor) == std::to_string(it->first)); // You can store your selection however you want, outside or inside your objects
-    //             if (ImGui::Selectable(std::to_string(it->first).c_str(), is_selected))
-    //             {
-    //                 current_motor = std::to_string(it->first).c_str();
-    //             }
-    //             if (is_selected)
-    //             {
-    //                 ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
-    //             }
-    //         }
-    //         ImGui::EndCombo();
-    //     }
-    // }
 
+    ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.45f);
     ImGui::InputDouble("kP", &mTrackedMotorConfig[motorId].kP, 0.001, 0.1);
     ImGui::InputDouble("kI", &mTrackedMotorConfig[motorId].kI, 0.001, 0.1);
     ImGui::InputDouble("kD", &mTrackedMotorConfig[motorId].kD, 0.001, 0.1);
     ImGui::InputDouble("kF", &mTrackedMotorConfig[motorId].kF, 0.001, 0.1);
     ImGui::InputDouble("I Zone", &mTrackedMotorConfig[motorId].iZone, 0.001, 0.1);
-    ImGui::InputDouble("Max I Accumulator", &mTrackedMotorConfig[motorId].max_i_accum, 0.001, 0.1);
-    ImGui::InputDouble("Motion Cruise Velocity", &mTrackedMotorConfig[motorId].motion_cruise_velocity, 0.001, 0.1);
+    ImGui::InputDouble("Max I Accum", &mTrackedMotorConfig[motorId].max_i_accum, 0.001, 0.1);
+    ImGui::InputDouble("Cruise Velocity", &mTrackedMotorConfig[motorId].motion_cruise_velocity, 0.001, 0.1);
     ImGui::InputDouble("Motion Acceleration", &mTrackedMotorConfig[motorId].motion_acceleration, 0.001, 0.1);
-    ImGui::InputInt("Motion S Curve Strength", &mTrackedMotorConfig[motorId].motion_s_curve_strength, 1, 1);
-    ImGui::InputDouble("Allowed Closed Loop Error", &mTrackedMotorConfig[motorId].allowed_closed_loop_error, 0.001, 0.1);
-    ImGui::InputDouble("Max Closed Loop Peak Output", &mTrackedMotorConfig[motorId].max_closed_loop_peak_output, 0.001, 0.1);
+    ImGui::InputInt("S Curve Strength", &mTrackedMotorConfig[motorId].motion_s_curve_strength, 1, 1);
+    ImGui::InputDouble("Allowed CL Error", &mTrackedMotorConfig[motorId].allowed_closed_loop_error, 0.001, 0.1);
+    ImGui::InputDouble("CL Peak Output", &mTrackedMotorConfig[motorId].max_closed_loop_peak_output, 0.001, 0.1);
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+    ImGui::InputDouble("Motor Output", &mTrackedMotorControl[motorId].output_value, 1, 1);
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
     if (ImGui::Button("Send Update"))
     {
-        std::scoped_lock<std::mutex> lock(mUpdateMutex);
-        mUpdateRequested = true;
+        copyToLiveMotorConfig(motorId);
     }
     ImGui::End();
+}
+
+void WindowManager::copyToLiveMotorConfig(int motorId)
+{
+    std::scoped_lock<std::mutex> lockControl(*mMotorControlMutex);
+    std::scoped_lock<std::mutex> lockConfig(*mOutputMotorConfigMutex);
+    (*mMotorControlMap)[motorId].output_value = mTrackedMotorControl[motorId].output_value;
+    (*mMotorConfigMap)[motorId].kP = mTrackedMotorConfig[motorId].kP;
+    (*mMotorConfigMap)[motorId].kI = mTrackedMotorConfig[motorId].kI;
+    (*mMotorConfigMap)[motorId].kD = mTrackedMotorConfig[motorId].kD;
+    (*mMotorConfigMap)[motorId].kF = mTrackedMotorConfig[motorId].kF;
+    (*mMotorConfigMap)[motorId].iZone = mTrackedMotorConfig[motorId].iZone;
+    (*mMotorConfigMap)[motorId].max_i_accum = mTrackedMotorConfig[motorId].max_i_accum;
+    (*mMotorConfigMap)[motorId].motion_cruise_velocity = mTrackedMotorConfig[motorId].motion_cruise_velocity;
+    (*mMotorConfigMap)[motorId].motion_acceleration = mTrackedMotorConfig[motorId].motion_acceleration;
+    (*mMotorConfigMap)[motorId].motion_s_curve_strength = mTrackedMotorConfig[motorId].motion_s_curve_strength;
+    (*mMotorConfigMap)[motorId].allowed_closed_loop_error = mTrackedMotorConfig[motorId].allowed_closed_loop_error;
+    (*mMotorConfigMap)[motorId].max_closed_loop_peak_output = mTrackedMotorConfig[motorId].max_closed_loop_peak_output;
+    //ROS_INFO("Copy to Live called. Motor Id: %d, Motor output value: %f, Motor kP value: %f", motorId, (*mMotorControlMap)[motorId].output_value, (*mMotorConfigMap)[motorId].kP);
 }
 
 void WindowManager::captureTunableMotors()
@@ -222,8 +272,14 @@ void WindowManager::captureTunableMotors()
         if (m.second.controller_mode == rio_control_node::Motor_Config::MASTER
             || m.second.controller_mode == rio_control_node::Motor_Config::FAST_MASTER)
         {
-            mTrackedMotorConfig[m.first] = m.second;
-            mTrackedMotorControl[m.first] = (*mMotorControlMap)[m.first];
+            if (!mTrackedMotorConfig.count(m.first))
+            {
+                mTrackedMotorConfig[m.first] = m.second;
+            }
+            if (!mTrackedMotorControl.count(m.first))
+            {
+                mTrackedMotorControl[m.first] = (*mMotorControlMap)[m.first];
+            }
         }
     }
 }

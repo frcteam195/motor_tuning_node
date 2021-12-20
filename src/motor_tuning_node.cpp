@@ -38,19 +38,17 @@ void motor_tuning_control_transmit()
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 	
-
-	for (const std::pair<uint32_t, rio_control_node::Motor>& m : currMotorControlMap)
-	{
-		std::scoped_lock<std::mutex> lock(curr_motor_control_lock);
-		motorControl.motors.push_back(m.second);
-	}
-
 	ros::Rate rate(10);
 
 	while (ros::ok())
 	{
 		{
 			std::scoped_lock<std::mutex> lock(curr_motor_control_lock);
+			motorControl.motors.clear();
+			for (auto it = currMotorControlMap.begin(); it != currMotorControlMap.end(); it++)
+			{
+				motorControl.motors.push_back(it->second);
+			}
 			motor_control_pub.publish(motorControl);
 		}
 		rate.sleep();
@@ -67,18 +65,17 @@ void motor_tuning_config_transmit()
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 
-	for (const std::pair<uint32_t, rio_control_node::Motor_Config>& m : currMotorConfigMap)
-	{
-		std::scoped_lock<std::mutex> lock(curr_motor_config_lock);
-		motorConfiguration.motors.push_back(m.second);
-	}
-
 	ros::Rate rate(10);
 
 	while (ros::ok())
 	{
 		{
 			std::scoped_lock<std::mutex> lock(curr_motor_config_lock);
+			motorConfiguration.motors.clear();
+			for (auto it = currMotorConfigMap.begin(); it != currMotorConfigMap.end(); it++)
+			{
+				motorConfiguration.motors.push_back(it->second);
+			}
 			motor_config_pub.publish(motorConfiguration);
 		}
 		rate.sleep();

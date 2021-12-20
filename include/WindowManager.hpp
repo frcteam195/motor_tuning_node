@@ -28,6 +28,7 @@ private:
     void showWindowOpenGL2_internal();
     void showWindowOpenGL3_internal();
     void captureTunableMotors();
+    void copyToLiveMotorConfig(int motorId);
 
     bool mUpdateRequested;
     std::mutex mUpdateMutex;
