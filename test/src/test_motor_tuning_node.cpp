@@ -4,7 +4,7 @@
 
 #include <gtest/gtest.h>
 
-TEST(SampleTest, Test_Test)
+TEST(MotorTuningTest, Test_Test)
 {
     ASSERT_TRUE(1);
     ASSERT_FALSE(0);
