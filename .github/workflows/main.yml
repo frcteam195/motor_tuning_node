@@ -38,7 +38,7 @@ jobs:
           mkdir -p catkin_ws/src
           cd catkin_ws/src
           cp -R $GITHUB_WORKSPACE ./
-          ./ros-ci-helper/fetch_ros_dependencies.sh $GITHUB_WORKSPACE/package.xml
+          ../../ros-ci-helper/fetch_ros_dependencies.sh $GITHUB_WORKSPACE/package.xml
           cd ..
           catkin_make -DCMAKE_CXX_FLAGS="-Werror -Wall -Wextra" -DCATKIN_ENABLE_TESTING=0
         shell: bash
