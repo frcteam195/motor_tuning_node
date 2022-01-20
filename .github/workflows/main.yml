@@ -38,6 +38,9 @@ jobs:
           mkdir -p catkin_ws/src
           cd catkin_ws/src
           git clone --recurse-submodules https://github.com/frcteam195/third_party_libs
+          cd third_party_libs
+          ../../../ros-ci-helper/make_third_party_libs.sh
+          cd ..
           cp -R $GITHUB_WORKSPACE ./
           ../../ros-ci-helper/fetch_ros_dependencies.sh $GITHUB_WORKSPACE/package.xml
           cd ..
