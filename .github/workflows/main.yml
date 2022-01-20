@@ -37,11 +37,11 @@ jobs:
           git clone https://github.com/frcteam195/ros-ci-helper
           git clone --recurse-submodules https://github.com/frcteam195/third_party_libs
           cd third_party_libs
-          ../ros-ci-helper/make_third_party_libs.sh
+          /tmp/ros-ci-helper/make_third_party_libs.sh
           mkdir -p /tmp/Robot/catkin_ws/src
           cd /tmp/Robot/catkin_ws/src
           cp -R $GITHUB_WORKSPACE ./
-          ../../ros-ci-helper/fetch_ros_dependencies.sh $GITHUB_WORKSPACE/package.xml
+          /tmp/ros-ci-helper/fetch_ros_dependencies.sh $GITHUB_WORKSPACE/package.xml
           cd ..
           source /opt/ros/melodic/setup.bash
           catkin_make -DCMAKE_CXX_FLAGS="-Werror -Wall -Wextra" -DCATKIN_ENABLE_TESTING=0
