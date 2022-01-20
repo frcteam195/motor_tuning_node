@@ -37,7 +37,7 @@ jobs:
           git clone https://github.com/frcteam195/ros-ci-helper.git
           git clone --recurse-submodules https://github.com/frcteam195/third_party_libs.git
           git clone https://github.com/frcteam195/ros_dev.git
-          mkdir -p /tmp/Robot/catkin_ws/src
+          mkdir -p /tmp/_Robot/catkin_ws/src
           cp -R $GITHUB_WORKSPACE /tmp/
           /tmp/ros-ci-helper/fetch_ros_dependencies.sh $GITHUB_WORKSPACE/package.xml
           ./ros_dev/mkrobot.sh build
