@@ -33,14 +33,13 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
         run: |
-          cd $GITHUB_WORKSPACE/..
+          cd /tmp
           git clone https://github.com/frcteam195/ros-ci-helper
-          mkdir -p catkin_ws/src
-          cd catkin_ws/src
           git clone --recurse-submodules https://github.com/frcteam195/third_party_libs
           cd third_party_libs
-          ../../../ros-ci-helper/make_third_party_libs.sh
-          cd ..
+          ../ros-ci-helper/make_third_party_libs.sh
+          mkdir -p Robot/catkin_ws/src
+          cd ../Robot/catkin_ws/src
           cp -R $GITHUB_WORKSPACE ./
           ../../ros-ci-helper/fetch_ros_dependencies.sh $GITHUB_WORKSPACE/package.xml
           cd ..
