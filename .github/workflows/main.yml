@@ -37,8 +37,15 @@ jobs:
           git clone https://github.com/frcteam195/ros-ci-helper.git
           git clone --recurse-submodules https://github.com/frcteam195/third_party_libs.git
           git clone https://github.com/frcteam195/ros_dev.git
+          cd /tmp/third_party_libs
+          /tmp/ros-ci-helper/make_third_party_libs.sh
+          cd /tmp
           mkdir -p /tmp/_Robot/catkin_ws/src
           cp -R $GITHUB_WORKSPACE /tmp/
           /tmp/ros-ci-helper/fetch_ros_dependencies.sh $GITHUB_WORKSPACE/package.xml
-          ./ros_dev/mkrobot.sh build
+          cd /tmp/_Robot/catkin_ws/src
+          source /opt/ros/melodic/setup.bash
+          find ../../.. -maxdepth 1 2>/dev/null | grep -v ^../../..$ | grep -e ".*_node" -e ".*_planner" | sed s:../../../::g | xargs -I {} ln -s ../../../{} {}
+          cd ..
+          catkin_make -DROBOT_ARCHITECTURE_X86_64=TRUE -DCMAKE_CXX_FLAGS="-Werror -Wall -Wextra" -DCATKIN_ENABLE_TESTING=0
         shell: bash
