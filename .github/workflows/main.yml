@@ -38,6 +38,12 @@ jobs:
           mkdir -p /tmp/_Robot/catkin_ws/src
           cp -R $GITHUB_WORKSPACE /tmp/
           /tmp/ros-ci-helper/fetch_ros_dependencies.sh $GITHUB_WORKSPACE/package.xml
+          find . -maxdepth 1 2>/dev/null | grep -v ^.$ | grep -e ".*_node" -e ".*_planner" | sed s:./::g | xargs -I {} /tmp/ros-ci-helper/fetch_ros_dependencies.sh ./{}/package.xml
+          find . -maxdepth 1 2>/dev/null | grep -v ^.$ | grep -e ".*_node" -e ".*_planner" | sed s:./::g | xargs -I {} /tmp/ros-ci-helper/fetch_ros_dependencies.sh ./{}/package.xml
+          find . -maxdepth 1 2>/dev/null | grep -v ^.$ | grep -e ".*_node" -e ".*_planner" | sed s:./::g | xargs -I {} /tmp/ros-ci-helper/fetch_ros_dependencies.sh ./{}/package.xml
+          find . -maxdepth 1 2>/dev/null | grep -v ^.$ | grep -e ".*_node" -e ".*_planner" | sed s:./::g | xargs -I {} /tmp/ros-ci-helper/fetch_ros_dependencies.sh ./{}/package.xml
+          find . -maxdepth 1 2>/dev/null | grep -v ^.$ | grep -e ".*_node" -e ".*_planner" | sed s:./::g | xargs -I {} /tmp/ros-ci-helper/fetch_ros_dependencies.sh ./{}/package.xml
+          find . -maxdepth 1 2>/dev/null | grep -v ^.$ | grep -e ".*_node" -e ".*_planner" | sed s:./::g | xargs -I {} /tmp/ros-ci-helper/fetch_ros_dependencies.sh ./{}/package.xml
           cd /tmp/_Robot/catkin_ws/src
           source /opt/ros/melodic/setup.bash
           find ../../.. -maxdepth 1 2>/dev/null | grep -v ^../../..$ | grep -e ".*_node" -e ".*_planner" | sed s:../../../::g | xargs -I {} ln -s ../../../{} {}
