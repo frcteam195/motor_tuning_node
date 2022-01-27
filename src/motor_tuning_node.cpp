@@ -117,8 +117,8 @@ void motorStatusCallback(const rio_control_node::Motor_Status &msg)
 
 void motorCurrentConfigurationCallback(const rio_control_node::Motor_Configuration &msg)
 {
-	if (!motor_config_callback_has_run)
-	{
+	// if (!motor_config_callback_has_run)
+	// {
 		std::scoped_lock<std::mutex> lock(curr_motor_config_lock);
 		for (const rio_control_node::Motor_Config &currMotor : msg.motors)
 		{
@@ -128,13 +128,13 @@ void motorCurrentConfigurationCallback(const rio_control_node::Motor_Configurati
 			}
 		}
 		motor_config_callback_has_run = true;
-	}
+	// }
 }
 
 void motorCurrentControlCallback(const rio_control_node::Motor_Control &msg)
 {
-	if (!motor_control_callback_has_run)
-	{
+	// if (!motor_control_callback_has_run)
+	// {
 		std::scoped_lock<std::mutex> lock(curr_motor_control_lock);
 		for (const rio_control_node::Motor &currMotor : msg.motors)
 		{
@@ -144,7 +144,7 @@ void motorCurrentControlCallback(const rio_control_node::Motor_Control &msg)
 			}
 		}
 		motor_control_callback_has_run = true;
-	}
+	// }
 }
 
 

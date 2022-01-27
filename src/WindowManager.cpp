@@ -217,7 +217,7 @@ void WindowManager::drawImguiWindow(int motorId, int listPos)
     int windowWidth = 250;
     int windowHeight = 400;
     const int maxNumWidgetsWide = (WINDOW_WIDTH / windowWidth);
-    if (listPos > maxNumWidgetsWide)
+    if (listPos > maxNumWidgetsWide - 1)
     {
         ImGui::SetNextWindowPos(ImVec2((listPos - maxNumWidgetsWide) * windowWidth, windowHeight));
     }
@@ -278,6 +278,8 @@ void WindowManager::copyToLiveMotorConfig(int motorId)
 
 void WindowManager::captureTunableMotors()
 {
+    std::lock_guard<std::mutex> lockConfig(*mOutputMotorConfigMutex);
+    std::lock_guard<std::mutex> lockControl(*mMotorControlMutex);
     for (const std::pair<uint32_t, rio_control_node::Motor_Config>& m : *mMotorConfigMap)
     {
         if (m.second.controller_mode == rio_control_node::Motor_Config::MASTER
