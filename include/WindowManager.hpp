@@ -7,6 +7,7 @@
 #include <rio_control_node/Motor_Config.h>
 #include <rio_control_node/Motor.h>
 #include <rio_control_node/Motor_Info.h>
+#include <rio_control_node/Motor_Status.h>
 
 
 class WindowManager : public Singleton<WindowManager>
@@ -43,5 +44,5 @@ private:
 
     std::map<uint32_t, rio_control_node::Motor_Config> mTrackedMotorConfig;
     std::map<uint32_t, rio_control_node::Motor> mTrackedMotorControl;
-
+    std::map<uint32_t, rio_control_node::Motor_Info> mTrackedMotorStatus;
 };

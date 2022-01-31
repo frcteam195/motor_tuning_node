@@ -7,6 +7,9 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl.h"
 #include "imgui/imgui_impl_opengl3.h"
+
+#include "ros/ros.h"
+
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #if defined(IMGUI_IMPL_OPENGL_ES2)
@@ -15,6 +18,7 @@
 #include <SDL2/SDL_opengl.h>
 #endif
 
+extern ros::NodeHandle* node;
 
 WindowManager::~WindowManager()
 {
@@ -23,6 +27,7 @@ WindowManager::~WindowManager()
         delete mWindowThread;
     }
 }
+
 void WindowManager::showWindow(std::map<uint32_t, rio_control_node::Motor_Config>& currMotorConfigMap, std::mutex& motorConfigMutex, std::map<uint32_t, rio_control_node::Motor_Info>& currMotorStatusMap, std::mutex& motorInfoMutex, std::map<uint32_t, rio_control_node::Motor>& currMotorControlMap, std::mutex& motorControlMutex)
 {
     if (!mWindowThread)
@@ -163,7 +168,8 @@ void WindowManager::showWindowOpenGL3_internal()
 
     // Main loop
     bool done = false;
-    while (!done)
+    ros::Rate rate(100);
+    while (!done && ros::ok())
     {
         SDL_Event event;
         while (SDL_PollEvent(&event))
@@ -196,6 +202,7 @@ void WindowManager::showWindowOpenGL3_internal()
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         SDL_GL_SwapWindow(window);
+        rate.sleep();
     }
 
     // Cleanup
@@ -278,8 +285,11 @@ void WindowManager::copyToLiveMotorConfig(int motorId)
 
 void WindowManager::captureTunableMotors()
 {
+    static ros::Publisher motor_tuning_status_pub = node->advertise<rio_control_node::Motor_Status>("MotorTuningStatus", 1);
+	static rio_control_node::Motor_Status motorStatus;
     std::lock_guard<std::mutex> lockConfig(*mOutputMotorConfigMutex);
     std::lock_guard<std::mutex> lockControl(*mMotorControlMutex);
+    std::lock_guard<std::mutex> lockStatus(*mMotorInfoMutex);
     for (const std::pair<uint32_t, rio_control_node::Motor_Config>& m : *mMotorConfigMap)
     {
         if (m.second.controller_mode == rio_control_node::Motor_Config::MASTER
@@ -293,6 +303,14 @@ void WindowManager::captureTunableMotors()
             {
                 mTrackedMotorControl[m.first] = (*mMotorControlMap)[m.first];
             }
+            mTrackedMotorStatus[m.first] = (*mMotorStatusMap)[m.first];
         }
     }
+
+    motorStatus.motors.clear();
+    for (const std::pair<uint32_t, rio_control_node::Motor_Info>& mInfo : *mMotorStatusMap)
+    {
+        motorStatus.motors.push_back(mInfo.second);
+    }
+    motor_tuning_status_pub.publish(motorStatus);
 }
