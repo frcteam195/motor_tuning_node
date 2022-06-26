@@ -190,7 +190,7 @@ void WindowManager::showWindowOpenGL3_internal()
 
         captureTunableMotors();
 
-        for (const std::pair<uint32_t, rio_control_node::Motor_Config>& m : mTrackedMotorConfig)
+        for (const std::pair<const uint32_t, rio_control_node::Motor_Config>& m : mTrackedMotorConfig)
         {
             drawImguiWindow(m.first, std::distance(mTrackedMotorConfig.begin(),mTrackedMotorConfig.find(m.first)));
         }
@@ -290,7 +290,7 @@ void WindowManager::captureTunableMotors()
     std::lock_guard<std::mutex> lockConfig(*mOutputMotorConfigMutex);
     std::lock_guard<std::mutex> lockControl(*mMotorControlMutex);
     std::lock_guard<std::mutex> lockStatus(*mMotorInfoMutex);
-    for (const std::pair<uint32_t, rio_control_node::Motor_Config>& m : *mMotorConfigMap)
+    for (const std::pair<const uint32_t, rio_control_node::Motor_Config>& m : *mMotorConfigMap)
     {
         if (m.second.controller_mode == rio_control_node::Motor_Config::MASTER
             || m.second.controller_mode == rio_control_node::Motor_Config::FAST_MASTER)
@@ -308,7 +308,7 @@ void WindowManager::captureTunableMotors()
     }
 
     motorStatus.motors.clear();
-    for (const std::pair<uint32_t, rio_control_node::Motor_Info>& mInfo : *mMotorStatusMap)
+    for (const std::pair<const uint32_t, rio_control_node::Motor_Info>& mInfo : *mMotorStatusMap)
     {
         motorStatus.motors.push_back(mInfo.second);
     }
